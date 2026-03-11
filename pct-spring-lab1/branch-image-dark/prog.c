@@ -27,7 +27,12 @@ int image_is_dark(uint8_t *img, int width, int height)
 
 int image_is_dark_opt(uint8_t *img, int width, int height)
 {
-    // TODO
+    int count = 0;
+    int size = width * height;
+    for (int i = 0; i < size; i++) {
+        count += img[i] >> 7;
+    }
+    return count < size / 2;
 }
 
 int main()
