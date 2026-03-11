@@ -14,7 +14,7 @@
 #define NREPS 3
 
 /* Block (tail) size */
-#define BS (CACHELINE_SIZE / sizeof(double))
+#define BS 64
 #define IMIN(a,b) ((a) < (b) ? (a) : (b))
 
 double a[N][N]; // __attribute__ ((aligned(CLSIZE)));
@@ -83,13 +83,16 @@ void dgemm_interchange(double a[N][N], double b[N][N], double c[N][N])
 }
 
 void dgemm_block(double a[N][N], double b[N][N], double c[N][N]) {
-    for (int ii = 0; ii < N; ii += BS) {
-        for (int jj = 0; jj < N; jj += BS) {
-            for (int kk = 0; kk < N; kk += BS) {
-                for (int i = ii; i < IMIN(N, ii + BS); i++) {
-                    for (int j = jj; j < IMIN(N, jj + BS); j++) {
-                        for (int k = kk; k < IMIN(N, kk + BS); k++)
-                            c[i][j] += a[i][k] * b[k][j];
+    int i, j, k, ii, jj, kk;
+    for (ii = 0; ii < N; ii += BS) {
+        for (kk = 0; kk < N; kk += BS) {
+            for (jj = 0; jj < N; jj += BS) {
+                for (i = ii; i < (ii + BS) && i < N; i++) {
+                    for (k = kk; k < (kk + BS) && k < N; k++) {
+                        double r = a[i][k];
+                        for (j = jj; j < (jj + BS) && j < N; j++) {
+                            c[i][j] += r * b[k][j];
+                        }
                     }
                 }
             }
