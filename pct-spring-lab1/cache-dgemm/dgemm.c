@@ -15,6 +15,7 @@
 
 /* Block (tail) size */
 #define BS (CACHELINE_SIZE / sizeof(double))
+#define IMIN(a,b) ((a) < (b) ? (a) : (b))
 
 double a[N][N]; // __attribute__ ((aligned(CLSIZE)));
 double b[N][N]; // __attribute__ ((aligned(CLSIZE)));
@@ -71,12 +72,29 @@ void dgemm_transpose(double a[N][N], double b[N][N], double c[N][N])
 
 void dgemm_interchange(double a[N][N], double b[N][N], double c[N][N])
 {
-    /* TODO */
+    for (int i = 0; i < N; i++) {
+        for (int k = 0; k < N; k++) {
+            double r = a[i][k];
+            for (int j = 0; j < N; j++) {
+                c[i][j] += r * b[k][j];
+            }
+        }
+    }
 }
 
-void dgemm_block(double a[N][N], double b[N][N], double c[N][N])
-{
-    /* TODO */
+void dgemm_block(double a[N][N], double b[N][N], double c[N][N]) {
+    for (int ii = 0; ii < N; ii += BS) {
+        for (int jj = 0; jj < N; jj += BS) {
+            for (int kk = 0; kk < N; kk += BS) {
+                for (int i = ii; i < IMIN(N, ii + BS); i++) {
+                    for (int j = jj; j < IMIN(N, jj + BS); j++) {
+                        for (int k = kk; k < IMIN(N, kk + BS); k++)
+                            c[i][j] += a[i][k] * b[k][j];
+                    }
+                }
+            }
+        }
+    }
 }
 
 void dgemm_verify(double a[N][N], double b[N][N], double c[N][N], const char *msg)
@@ -142,21 +160,20 @@ int main()
     printf("# DGEMM bloc: N=%d, BS=%ld, elapsed time (sec) %.6f\n", N, BS, t3);
     #endif
 
-    /* Verification */
-    #if 0
 
-    #if 0
+
+    #if 1
     matrix_init(a, b, c);
     dgemm_interchange(a, b, c);
     dgemm_verify(a, b, c, "interchange");
     #endif
 
-    #if 0
+    #if 1
     matrix_init(a, b, c);
     dgemm_block(a, b, c);
     dgemm_verify(a, b, c, "block");
     #endif
 
-    #endif
+
     return 0;
 }
