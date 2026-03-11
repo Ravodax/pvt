@@ -14,7 +14,7 @@
 #define NREPS 3
 
 /* Block (tail) size */
-#define BS 32
+#define BS 16
 #define IMIN(a,b) ((a) < (b) ? (a) : (b))
 
 double a[N][N]; // __attribute__ ((aligned(CLSIZE)));
