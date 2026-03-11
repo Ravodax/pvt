@@ -141,7 +141,7 @@ int main()
     printf("# DGEMM def: N=%d, elapsed time (sec) %.6f\n", N, t1);
     #endif
 
-    #if 0
+    #if 1
     matrix_init(a, b, c);
     t2 = wtime();
     for (int i = 0; i < NREPS; i++) {
@@ -152,7 +152,7 @@ int main()
     printf("# DGEMM interchange: N=%d, elapsed time (sec) %.6f\n", N, t2);
     #endif
 
-    #if 1
+    #if 0
     matrix_init(a, b, c);
     t3 = wtime();
     for (int i = 0; i < NREPS; i++) {
