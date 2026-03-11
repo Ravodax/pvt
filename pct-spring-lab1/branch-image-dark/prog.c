@@ -46,8 +46,8 @@ int main()
     }
 
     double t = wtime();
-    int dark = image_is_dark(image, W, H);
-    //int dark = image_is_dark_opt(image, W, H);
+    //int dark = image_is_dark(image, W, H);
+    int dark = image_is_dark_opt(image, W, H);
     t = wtime() - t;
 
     printf("Time %.6f, dark %d\n", t, dark);
